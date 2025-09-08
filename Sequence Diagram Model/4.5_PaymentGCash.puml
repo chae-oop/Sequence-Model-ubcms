@@ -1,5 +1,5 @@
 @startuml
-title 4.5 Payment – GCash (Digital)
+title 4.5 Payment - GCash (Digital)
 
 actor Tenant
 participant Frontend
