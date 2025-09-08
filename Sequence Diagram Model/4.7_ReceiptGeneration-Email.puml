@@ -1,0 +1,23 @@
+@startuml
+title 4.7 Receipt Generation & Email Dispatch
+
+actor Tenant
+actor Admin
+participant Backend
+database Database
+
+== Main Flow ==
+Backend -> Backend: 1. Compose receipt data
+Backend -> Backend: 2. Render PDF receipt
+Backend -> Database: Save receipt file
+Backend -> Backend: 3. Compose email with PDF
+Backend -> Tenant: 4. Send email
+Backend -> Admin: (Optional) BCC Admin
+Backend -> Database: 5. Update payment with receipt reference
+Backend -> Database: 6. Audit "RECEIPT_SENT"
+
+== Exceptions ==
+Backend --> Admin: E1 SMTP error → retry, alert Admin
+Backend --> Admin: E2 Invalid email → mark undeliverable
+
+@enduml

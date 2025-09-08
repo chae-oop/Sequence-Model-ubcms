@@ -1,0 +1,30 @@
+@startuml
+title 4.3 Meter Reading - Offline Capture & Sync
+
+actor Collector
+participant Frontend
+participant Backend
+database Database
+
+== Offline Capture ==
+Collector -> Frontend: 1. Open readings form (offline)
+Collector -> Frontend: 2. Input readings
+Frontend -> Frontend: 3. Validate locally
+Frontend -> Frontend: 4. Save to IndexedDB (sync_status = pending)
+
+== Auto Sync ==
+Frontend -> Frontend: 1. Connection restored (listener triggers)
+Frontend -> Frontend: 2. Read pending items from IndexedDB
+Frontend -> Backend: 3. POST item with client timestamp
+Backend -> Backend: 4. Validate + save
+Backend -> Database: Write meter_reading
+Backend --> Frontend: 5. Return server IDs
+Frontend -> Frontend: 6. Mark as synced in IndexedDB
+Frontend --> Collector: 7. Show sync status
+Backend -> Database: 8. Audit "READING_SYNCED"
+
+== Exceptions ==
+Backend --> Frontend: E1 Server rejects → mark error with reason
+Backend --> Frontend: E2 Conflict (higher reading) → flag manual review
+
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+title 4.8 Irregular Usage Flagging & Validation
+
+actor Admin
+actor Collector
+participant Frontend
+participant Backend
+database Database
+
+== Main Flow ==
+Admin -> Frontend: 1. Open "Usage Review"
+Frontend -> Backend: 2. Fetch anomalous readings
+Backend -> Database: Query anomalies
+Backend --> Frontend: Show results
+Admin -> Frontend: 3. Flag reading for validation
+Frontend -> Backend: 4. Mark flagged/estimated
+Backend -> Database: Update reading
+Admin -> Collector: 5. Request recheck (optional)
+Collector -> Frontend: 6. Submit corrected reading
+Frontend -> Backend: Update reading
+Backend -> Database: Save correction
+Admin -> Frontend: 7. Approve final reading
+Backend -> Database: Enable bill recomputation
+Backend -> Database: 8. Audit "USAGE_FLAGGED", "USAGE_APPROVED"
+
+== Exceptions ==
+Backend --> Admin: E1 No correction → estimated bill applied
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+title 4.6 Payment - Manual (Over-the-Counter)
+
+actor Tenant
+actor Admin
+participant Frontend
+participant Backend
+database Database
+
+== Main Flow ==
+Tenant -> Admin: 1. Pays cash
+Admin -> Frontend: 2. Search bill → "Log Manual Payment"
+Admin -> Frontend: 3. Input amount, OR number, date
+Frontend -> Backend: 4. Save payment (manual, completed)
+Backend -> Database: Store payment record
+Backend -> Database: Update bill (paid/partial)
+Backend -> Backend: Generate PDF receipt
+Backend -> Tenant: Email receipt via Nodemailer
+Backend -> Database: Audit "PAYMENT_MANUAL_LOGGED", "RECEIPT_SENT"
+
+== Exceptions ==
+Backend --> Admin: E1 Overpayment → credit note/surplus
+Backend --> Admin: E2 Duplicate receipt number → block, correct
+
+@enduml

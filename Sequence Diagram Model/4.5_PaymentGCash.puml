@@ -1,0 +1,32 @@
+@startuml
+title 4.5 Payment – GCash (Digital)
+
+actor Tenant
+participant Frontend
+participant Backend
+database Database
+participant "GCash SDK" as GCash
+
+== Main Flow ==
+Tenant -> Frontend: 1. Open "My Bills"
+Tenant -> Frontend: 2. Select unpaid bill → Pay with GCash
+Frontend -> Backend: 3. Create payment intent (pending)
+Backend -> Database: Store payment intent
+Frontend -> GCash: 4. Redirect with amount + metadata
+Tenant -> GCash: 5. Complete GCash flow
+GCash -> Backend: 6. Success callback/webhook
+Backend -> Backend: 7. Verify signature/amount
+Backend -> Database: Update payment = completed
+Backend -> Database: Update bill.status = paid/partial
+Backend -> Backend: 9. Generate PDF receipt
+Backend -> Database: Save receipt metadata
+Backend -> Tenant: 10. Send receipt email
+Backend -> Database: 11. Audit "PAYMENT_GCASH_SUCCESS", "RECEIPT_SENT"
+
+== Exceptions ==
+GCash --> Tenant: E1 Declined/timeout → failed
+Backend --> Frontend: E2 Webhook not received → hold pending
+Backend --> Admin: E3 Amount mismatch → flag for review
+Backend --> Tenant: E4 Email failure → retry, mark pending
+
+@enduml

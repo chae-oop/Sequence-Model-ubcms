@@ -1,4 +1,6 @@
-@startuml UserAuth
+@startuml
+title 4.1 User Authentication (Login/Logout)
+
 actor User
 participant Frontend
 participant Backend
@@ -20,4 +22,15 @@ User -> Frontend: 1. Click Logout
 Frontend -> Frontend: 2. Clear JWT/session
 Frontend -> Backend: 3. Notify logout
 Backend -> Database: 4. Audit "LOGOUT"
+
+== Exceptions ==
+Frontend --> User: E1 Invalid credentials → error toast
+Backend -> Database: Audit "LOGIN_FAIL"
+
+Frontend --> User: E2 Inactive/removed account → deny access
+Backend -> Database: Audit "LOGIN_DENIED"
+
+Backend --> Frontend: E3 Expired JWT → 401
+Frontend --> User: Force re-login
+
 @enduml

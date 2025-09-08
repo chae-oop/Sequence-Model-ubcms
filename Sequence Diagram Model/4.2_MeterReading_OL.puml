@@ -1,0 +1,24 @@
+@startuml
+title 4.2 Meter Reading - Online Entry
+
+actor Collector
+participant Frontend
+participant Backend
+database Database
+
+== Main Flow ==
+Collector -> Frontend: 1. Open "Meter Readings" form
+Collector -> Frontend: 2. Select room + input readings
+Frontend -> Frontend: 3. Validate fields
+Frontend -> Backend: 4. Submit readings
+Backend -> Backend: 5. Domain checks (spike/duplicate)
+Backend -> Database: 6. Write record to meter_reading
+Backend --> Frontend: 7. Success confirmation
+Backend -> Database: 8. Audit "READING_CREATE"
+
+== Exceptions ==
+Frontend --> Collector: E1 Validation fails → inline errors
+Backend --> Frontend: E2 Duplicate reading → reject, suggest edit
+Frontend --> Collector: E3 Network error → retry prompt
+
+@enduml

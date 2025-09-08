@@ -1,0 +1,26 @@
+@startuml
+title 4.4 Bill Generation (Admin)
+
+actor Admin
+participant Frontend
+participant Backend
+database Database
+
+== Main Flow ==
+Admin -> Frontend: 1. Open "Billing" page
+Admin -> Frontend: 2. Select billing period
+Frontend -> Backend: 3. Fetch eligible readings + mappings
+Backend -> Database: Retrieve readings + tenant/room
+Backend --> Frontend: 4. Preview computed usage/amounts
+Admin -> Frontend: 5. Confirm "Generate Bills"
+Frontend -> Backend: 6. Submit generate
+Backend -> Database: 7. Create bill records
+Backend --> Admin: 8. Success confirmation
+Backend -> Database: 9. Audit "BILL_GENERATE"
+Backend -> Admin: (Optional) Send bill notices
+
+== Exceptions ==
+Backend --> Admin: E1 Missing reading → mark estimated/exclude
+Backend --> Admin: E2 Calculation error → abort batch, show report
+
+@enduml
