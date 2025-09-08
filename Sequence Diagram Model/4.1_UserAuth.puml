@@ -1,0 +1,23 @@
+@startuml UserAuth
+actor User
+participant Frontend
+participant Backend
+database Database
+
+== Login ==
+User -> Frontend: 1. Open Login Page
+User -> Frontend: 2. Enter email + password
+Frontend -> Backend: 3. Submit credentials
+Backend -> Database: 4. Validate user (Prisma)
+Database --> Backend: User valid
+Backend --> Frontend: 5. Return JWT (with role)
+Frontend -> Frontend: 6. Store JWT securely
+Frontend --> User: 7. Redirect to dashboard
+Backend -> Database: 8. Audit "LOGIN_SUCCESS"
+
+== Logout ==
+User -> Frontend: 1. Click Logout
+Frontend -> Frontend: 2. Clear JWT/session
+Frontend -> Backend: 3. Notify logout
+Backend -> Database: 4. Audit "LOGOUT"
+@enduml
