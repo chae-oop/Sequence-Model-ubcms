@@ -1,0 +1,37 @@
+@startuml
+title 4.10 Dashboard Load (All Roles)
+
+actor Tenant
+actor Collector
+actor Admin
+participant Frontend
+participant Backend
+database Database
+
+== Main Flow ==
+Tenant -> Frontend: 1. Land on tenant dashboard
+Collector -> Frontend: 1. Land on collector dashboard
+Admin -> Frontend: 1. Land on admin dashboard
+
+Frontend -> Backend: 2. Request summary endpoints
+note right of Frontend
+  - Tenant: unpaid bills, last payments, notices
+  - Collector: assigned rooms, pending sync count
+  - Admin: KPIs (total bills, paid/unpaid, collections), alerts
+end note
+
+Backend -> Database: 3. Fetch summaries & counts
+Database --> Backend: Return results
+Backend --> Frontend: 3. Return summaries & counts
+Frontend -> Frontend: 4. Render widgets/charts\nShow status badges (e.g., Sync OK)
+
+== Exceptions ==
+Backend --> Frontend: E1 Token expired → 401
+Frontend --> Tenant: Redirect to login
+Frontend --> Collector: Redirect to login
+Frontend --> Admin: Redirect to login
+
+Backend --> Frontend: E2 API error
+Frontend -> Frontend: Show fallback/error state
+
+@enduml
