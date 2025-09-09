@@ -1,0 +1,44 @@
+@startuml
+title 4.11 User Management (Admin - CRUD)
+
+actor Admin
+participant Frontend
+participant Backend
+database Database
+participant "Audit Log" as Log
+participant "Email Service" as Mail
+
+== Create ==
+Admin -> Frontend: 1. Click "Add User"
+Admin -> Frontend: 2. Input profile, role, room link (tenant)
+Frontend -> Backend: 3. Submit user details
+Backend -> Database: 4. Validate uniqueness (email)
+Database --> Backend: Result
+Backend -> Database: 5. Create user record
+Backend -> Mail: 6. (Optional) Send welcome email
+Backend -> Log: 7. Audit "USER_CREATE"
+
+== Update ==
+Admin -> Frontend: 1. Edit user details/role/status
+Frontend -> Backend: 2. Submit update
+Backend -> Database: 3. Update user record
+Backend -> Database: 4. Cascade permissions if needed
+Backend -> Log: 5. Audit "USER_UPDATE"
+
+== Delete/Deactivate ==
+Admin -> Frontend: 1. Deactivate/remove account
+Frontend -> Backend: 2. Submit delete/deactivate
+Backend -> Database: 3. Revoke access (soft delete recommended)
+Backend -> Log: 4. Audit "USER_DEACTIVATE/DELETE"
+
+== Exceptions ==
+Backend --> Frontend: E1 Duplicate email → block create
+Frontend --> Admin: Show error
+
+Backend --> Frontend: E2 User has dependencies → enforce policy
+note right of Backend
+  - Reassign room
+  - Keep history
+end note
+
+@enduml
