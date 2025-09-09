@@ -9,7 +9,7 @@ collections "Audit Log" as Log
 
 == Main Flow ==
 Admin -> Frontend: 1. Open "Reports"
-Admin -> Frontend: 2. Select report type\n(Billing Summary/Payment Logs/Usage/Occupancy)
+Admin -> Frontend: 2. Select report type (Billing Summary/Payment Logs/Usage/Occupancy)
 Admin -> Frontend: 3. Set filters (period, tenant, room, status)
 Frontend -> Backend: 4. Request report with filters
 Backend -> Database: 5. Query aggregated data
