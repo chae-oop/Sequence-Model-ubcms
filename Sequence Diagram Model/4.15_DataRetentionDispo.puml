@@ -1,0 +1,31 @@
+@startuml
+title 4.15 Data Retention & Disposal (Admin)
+
+actor Admin
+participant Frontend
+participant Backend
+database Database
+participant "Audit Log" as Log
+
+== Main Flow ==
+Admin -> Frontend: 1. Open "Data Retention"
+Admin -> Frontend: 2. Select records\n(e.g., old inactive accounts, archived billing cycles)
+Frontend -> Backend: 3. Submit selected records
+Backend -> Database: 3a. Compute impact\n(check dependencies, counts)
+Database --> Backend: Impact analysis result
+Backend --> Frontend: Ask confirmation from Admin
+Admin -> Frontend: Confirm disposal/archival
+Frontend -> Backend: 4. Confirm action
+Backend -> Database: 4a. Archive or delete records\n(per policy)
+Backend -> Database: 5. Log each deletion/archival with references
+Backend -> Log: 6. Audit "DATA_DISPOSAL/ARCHIVE"
+Backend --> Frontend: Notify success
+Frontend --> Admin: Show confirmation
+
+== Exceptions ==
+Backend -> Database: Check if records under active audit/dispute
+Database --> Backend: Records flagged
+Backend --> Frontend: E1 Block disposal (reason: active audit/dispute)
+Frontend --> Admin: Show error message
+
+@enduml
