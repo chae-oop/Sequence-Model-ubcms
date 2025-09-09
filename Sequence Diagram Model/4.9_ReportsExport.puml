@@ -1,0 +1,28 @@
+@startuml
+title 4.9 Reports Export (Admin)
+
+actor Admin
+participant Frontend
+participant Backend
+database Database
+collections "Audit Log" as Log
+
+== Main Flow ==
+Admin -> Frontend: 1. Open "Reports"
+Admin -> Frontend: 2. Select report type\n(Billing Summary/Payment Logs/Usage/Occupancy)
+Admin -> Frontend: 3. Set filters (period, tenant, room, status)
+Frontend -> Backend: 4. Request report with filters
+Backend -> Database: 5. Query aggregated data
+Database --> Backend: Return filtered data
+Admin -> Frontend: 6. Choose export format (PDF/Excel)
+Frontend -> Backend: 7. Generate file (PDF-lib/ExcelJS)
+Backend --> Frontend: 8. Return download link/stream
+Backend -> Log: 9. Audit "REPORT_EXPORT"
+
+== Exceptions ==
+Backend --> Frontend: E1 No data for filters → "No records found"
+
+Backend -> Backend: E2 Large export → Chunked generation or async job
+Backend --> Frontend: Notify async processing
+
+@enduml
