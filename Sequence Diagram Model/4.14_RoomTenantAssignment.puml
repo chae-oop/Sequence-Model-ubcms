@@ -1,0 +1,27 @@
+@startuml
+title 4.14 Room–Tenant Assignment (Admin)
+
+actor Admin
+participant Frontend
+participant Backend
+database Database
+participant "Audit Log" as Log
+
+== Main Flow ==
+Admin -> Frontend: 1. Lands on Admin Dashboard
+Admin -> Frontend: 2. Open Room profile, click "Assign Tenant"
+Admin -> Frontend: 3. Select tenant plus effective date
+Frontend -> Backend: 4. Submit tenant assignment
+Backend -> Database: 4a. Link room to tenant
+Backend -> Database: 4b. Ensure only one active tenant
+Database --> Backend: Successfully Retrieved
+Backend -> Database: 5. Update references for future readings/bills
+Backend -> Log: 6. Audit "ROOM_ASSIGN_TENANT"
+Backend --> Frontend: Confirm assignment
+Frontend --> Admin: Show success message
+
+== Exceptions ==
+Backend --> Frontend: E1 Room already occupied
+Frontend --> Admin: Require checkout date or deny
+
+@enduml
