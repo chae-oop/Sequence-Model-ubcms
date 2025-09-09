@@ -1,0 +1,47 @@
+@startuml
+title 4.12 Backup & Recovery
+
+actor Admin
+actor Developers
+participant Scheduler
+participant Backend
+database Database
+participant Storage
+participant "Audit Log" as Log
+
+== Backup (Scheduled) ==
+Scheduler -> Backend: 1. Trigger backup at configured time
+Backend -> Database: 2. Snapshot and archive files
+Database --> Backend: Snapshot complete
+Backend -> Storage: 2. Save archive
+Storage --> Backend: Success
+Backend -> Log: 3. Update backup logs (timestamp, status)
+Backend -> Log: 4. Audit "BACKUP_COMPLETE"
+
+== Manual Backup ==
+Admin -> Backend: 1. Click "Run Backup Now"
+Backend -> Database: 2. Trigger backup job
+Database --> Backend: Snapshot complete
+Backend -> Storage: Save archive
+Backend -> Log: 3. Log backup result
+Backend --> Admin: Notify backup success
+
+== Recovery ==
+Admin -> Backend: 1. Request restore (scope, timestamp)
+Backend -> Backend: 2. Verify permissions + maintenance window
+Backend -> Storage: 3. Fetch snapshot
+Storage --> Backend: Snapshot ready
+Backend -> Database: 3. Restore snapshot (staging/prod per policy)
+Database --> Backend: Restore applied
+Backend -> Backend: 4. Run post-restore integrity checks
+Backend -> Log: 5. Audit "RESTORE_COMPLETE"
+Backend --> Admin: Notify restore success
+
+== Exceptions ==
+Backend --> Admin: E1 Storage quota exceeded → notify Admin
+Backend -> Storage: Purge old backups (per retention policy)
+
+Backend --> Admin: E2 Restore integrity failed → rollback
+Backend --> Developer: Alert Developers
+
+@enduml
