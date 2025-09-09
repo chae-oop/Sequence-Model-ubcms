@@ -1,0 +1,31 @@
+@startuml
+title 4.13 Audit Log Access (Admin/Developers)
+
+actor Admin
+actor Developer
+participant Frontend
+participant Backend
+participant "Audit Log" as Log
+
+== Main Flow ==
+Admin -> Frontend: 1. Clicks "Audit Logs"
+Frontend -> Backend: Request to the backend for queries
+Backend -> Log: Fetch available audit log metadata
+Log --> Backend: Return metadata / available filters
+Backend --> Frontend: Send logs metadata
+Frontend --> Admin: Display logs page
+Admin -> Frontend: 2. Set filters (date, user, action, module)
+Frontend -> Backend: 3. Request logs with filters
+Backend -> Log: Fetch filtered logs
+Log --> Backend: Return logs
+Backend --> Frontend: 4. Return paginated results
+Frontend -> Frontend: Render results, export option
+Backend -> Log: 5. Audit "AUDIT_VIEWED"
+
+== Exceptions ==
+Developer -> Frontend: E1 Attempt audit log access
+Frontend -> Backend: Request logs
+Backend -> Log: Audit "AUDIT_ACCESS_DENIED"
+Backend --> Developer: Deny access
+
+@enduml
