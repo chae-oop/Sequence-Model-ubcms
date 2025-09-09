@@ -5,7 +5,7 @@ actor Admin
 participant Frontend
 participant Backend
 database Database
-collections "Audit Log" as Log
+participant "Audit Log" as Log
 
 == Main Flow ==
 Admin -> Frontend: 1. Open "Reports"
